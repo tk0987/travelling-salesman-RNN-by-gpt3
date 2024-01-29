@@ -7,3 +7,5 @@ at least 18x better than connecting 3D points 'row_wise'.
 optimization for cnc still needed - this network does not accept that milled object have its borders.
 
 loss value is very, very big. even after 100 epochs. but still - it works.
+
+i won't upload saved model, because it's binary - i have my concerns 'bout anything binary
