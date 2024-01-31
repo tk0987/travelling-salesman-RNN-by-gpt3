@@ -1,4 +1,5 @@
 # i've made this folder private, because i've mistaken a source file...
+# note thousands of warnings during training - but mcgyver's scratch can work sometimes. even while coding, nothing flammable! (outside of cpus/gpus)
 
 import tensorflow as tf
 import numpy as np
