@@ -1,4 +1,10 @@
 # travelling-salesman-RNN-by-gpt3
+
+***
+ATTENTION
+***
+i have several versions of this code, while only one is correct. i'm checking this version currently, my pc is humming nicely.
+
 i asked chatgpt for creating a rnn for tsp optimization (for my cnc). 
 training loop is then an intelectual property of... gpt3. 
 architecture is mine. quite a good, at least for being a scrap architecture. Shown here, as it needs more work. i will check for fully conv recurrent layers in keras, and if i find them - another source will be trashed here.
