@@ -1,6 +1,3 @@
-# i've made this folder private, because i've mistaken a source file...
-# note thousands of warnings during training - but mcgyver's scratch can work sometimes. even while coding, nothing flammable! (outside of cpus/gpus)
-
 import tensorflow as tf
 import numpy as np
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -56,7 +53,7 @@ model.compile(optimizer=optimizer, loss=tsp_loss)
 
 # Generate training data
 num_samples = 10
-inputs = [generate_tsp_data(num_cities) for i in range (num_samples)] # i found more relevant version of this code, and this corrected line seems to make more sense! what a mess
+inputs = [generate_tsp_data(num_cities) for i in range (num_samples)]
 outputs_indices = np.zeros((num_samples, num_cities))
 outputs_values = np.zeros((num_samples, num_cities))
 batch_size = 4
@@ -103,5 +100,5 @@ with tf.device('/device:GPU:0'):
             num_batches += 1
 
         average_loss = total_loss / num_batches
-        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.6f}")
-        tf.saved_model.save(model,"./my_recurrent")
+        print(f"\n\n\nEpoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.6f}\n\n\n")
+        model.save(f"./my_recurrent/model_{epoch}_loss_{average_loss}.h5",overwrite=False)
