@@ -55,7 +55,7 @@ model.compile(optimizer=optimizer, loss=tsp_loss)
 
 # Generate training data
 num_samples = 10
-inputs = np.zeros((num_samples, num_cities, 3))
+inputs = [generate_tsp_data(num_cities) for i in range (num_samples)] # i found more relevant version of this code, and this corrected line seems to make more sense! what a mess
 outputs_indices = np.zeros((num_samples, num_cities))
 outputs_values = np.zeros((num_samples, num_cities))
 batch_size = 4
