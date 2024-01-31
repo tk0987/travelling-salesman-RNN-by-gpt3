@@ -3,7 +3,7 @@
 ***
 ATTENTION
 ***
-i have several versions of this code, while only one is correct. i'm checking this version currently, my pc is humming nicely.
+i have several versions of this code, while only one is correct. i'm checking this version currently, my pc is humming nicely. and my bills are growing nicely, too!
 
 i asked chatgpt for creating a rnn for tsp optimization (for my cnc). 
 training loop is then an intelectual property of... gpt3. 
