@@ -13,7 +13,7 @@ model = tf.keras.models.load_model(f"./model_229_loss_14669.806640625.h5",custom
 # model.compile()
 # model.load_weights(f"/geniusz/nn/tsp/my_recurrent/variables/variables.data-00000-of-00001")
 def generate_tsp_data(num_cities):
-    np.random.seed(999)
+    np.random.seed(0)
     return np.random.rand(num_cities, 3)
 num_samples = 10
 inputs = np.expand_dims(generate_tsp_data(num_cities),axis=0) # bah, abrakadabra! 
@@ -23,4 +23,4 @@ preds=(model.predict(inputs))
 
 inputs=np.asanyarray(inputs)
 preds=np.asanyarray(preds)
-print((np.sum(inputs)/np.sum(preds))**-1)
+print((np.sum(np.sqrt(inputs[:,:,0]**2+inputs[:,:,1]**2+inputs[:,:,2]**2))/np.sum(np.sqrt(preds[:,:,0]**2+preds[:,:,1]**2+preds[:,:,2]**2)))**-1)# this '**-1' is because i'm lazy today
