@@ -1,11 +1,7 @@
+# i've made this folder private, because i've mistaken a source file...
+
 import tensorflow as tf
 import numpy as np
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-seed = 777
-np.random.seed(seed)
-tf.random.set_seed(seed)
-
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     try:
@@ -15,6 +11,10 @@ if gpus:
         print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
     except RuntimeError as e:
         print(e)
+# Set the random seeds for reproducibility
+seed = 777
+np.random.seed(seed)
+tf.random.set_seed(seed)
 
 # Generate random 3D TSP data
 def generate_tsp_data(num_cities):
@@ -23,33 +23,42 @@ def generate_tsp_data(num_cities):
 
 @tf.function
 def tsp_loss(y_true, y_pred):
-    y_pred = tf.math.argmax(y_pred, axis=-1)
-    y_pred = tf.cast(y_pred, dtype=tf.int32)
-    pred_route = tf.one_hot(y_pred, depth=tf.shape(y_true)[-1])
-    pred_route = tf.cast(pred_route, dtype=tf.float32)
-    y_true = tf.sparse.to_dense(y_true, default_value=0)
-    y_true = tf.cast(y_true, dtype=tf.float32)
-
-    # Compute the loss using cross-entropy
-    loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, pred_route)
+    y_true = tf.cast(tf.sparse.to_dense(y_true), dtype=tf.float32)
+    loss = tf.keras.losses.mean_squared_error(y_true, y_pred)
     return tf.reduce_mean(loss)
 
-# Create the model
+# Create the model - it is a scrap, but working scrap - 18x better than connecting points 'row_wise'
+# kinda crude, and scrap - beware
 num_cities = 1000
 tsp_data = generate_tsp_data(num_cities)
-
-model = tf.keras.Sequential()
-model.add(tf.keras.layers.LSTM(num_cities, input_shape=(num_cities, 3)))
-model.add(tf.keras.layers.Dense(num_cities, activation='softmax'))
-
+inputs = tf.keras.layers.Input(shape=(num_cities, 3), batch_size=4)
+lstm1 = tf.keras.layers.SimpleRNN(100, return_sequences=False, return_state=True, input_shape=(num_cities, 3))
+lstm2 = tf.keras.layers.SimpleRNN(100, return_sequences=False, return_state=True, input_shape=(num_cities, 3))
+_1, last_hidden_state1= lstm1(inputs)
+_2, last_hidden_state2= lstm2(inputs)
+# sum1=tf.keras.layers.Add()([last_hidden_state1,last_hidden_state2])
+lstm3 = tf.keras.layers.GRU(100, return_sequences=False, return_state=True, input_shape=(num_cities, 3))
+lstm4 = tf.keras.layers.SimpleRNN(100, return_sequences=False, return_state=True, input_shape=(num_cities, 3))
+_3, last_hidden_state3= lstm3(inputs)
+_4, last_hidden_state4= lstm4(inputs)
+lstm5 = tf.keras.layers.LSTM(100, return_sequences=False, return_state=True, input_shape=(num_cities, 3))
+_51,asdfgt,_=lstm5(inputs)
+sum2=tf.keras.layers.Add()([_3,_4,_1,_2,_51])
+hid_lay=tf.keras.layers.Dense(300, activation="relu")
+_5= hid_lay(sum2)
+outputs = tf.keras.layers.Dense(num_cities, activation='softmax')(_5)
+model = tf.keras.Model(inputs, outputs)
+model.summary()
 # Compile the model
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
+optimizer = tf.keras.optimizers.Adam()
+model.compile(optimizer=optimizer, loss=tsp_loss)
 
 # Generate training data
-num_samples = 1000
+num_samples = 10
 inputs = np.zeros((num_samples, num_cities, 3))
 outputs_indices = np.zeros((num_samples, num_cities))
 outputs_values = np.zeros((num_samples, num_cities))
+batch_size = 4
 with tf.device('/device:GPU:0'):
     for i in range(num_samples):
         permutation = np.random.permutation(num_cities)
@@ -65,7 +74,7 @@ with tf.device('/device:GPU:0'):
     values = outputs_values.flatten()
     dense_shape = (num_samples, num_cities)
     outputs_sparse = tf.sparse.SparseTensor(indices, values, dense_shape)
-    batch_size = 4
+
     # Create a TensorFlow dataset
     dataset = tf.data.Dataset.from_tensor_slices((inputs, outputs_sparse))
 
@@ -77,17 +86,13 @@ with tf.device('/device:GPU:0'):
     def train_step(inputs, targets):
         with tf.GradientTape() as tape:
             predictions = model(inputs)
-            loss = tsp_loss(predictions,outputs_sparse)
+            loss = tsp_loss(targets, predictions)
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         return loss
 
-    # Define the training loop
+    # Training loop
     num_epochs = 10000
-
-    optimizer = tf.keras.optimizers.Adam()
-    my_callbacks = tf.keras.callbacks.ModelCheckpoint(filepath=r'./chatNN_epoka-{epoch:02d}_loss-{loss:.6f}.h5', verbose=1, monitor="loss", save_weights_only=False, mode="min", save_best_only=True)
-
     for epoch in range(num_epochs):
         total_loss = 0.0
         num_batches = 0
@@ -95,7 +100,7 @@ with tf.device('/device:GPU:0'):
             loss = train_step(batch_inputs, batch_targets)
             total_loss += loss
             num_batches += 1
-        average_loss = total_loss / num_batches
-        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {average_loss:.6f}")
 
-        # Add any additional callbacks or save checkpoints here
+        average_loss = total_loss / num_batches
+        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.6f}")
+        tf.saved_model.save(model,"./my_recurrent")
