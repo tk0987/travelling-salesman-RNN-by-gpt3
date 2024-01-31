@@ -15,3 +15,5 @@ optimization for cnc still needed - this network does not accept that milled obj
 loss value is very, very big. even after 100 epochs. but still - it works.
 
 i won't upload saved model, because it's binary - i have my concerns 'bout anything binary
+
+at 1st feb 2024 i 'll try this thing on real gcode, in order to confirm this non-confirmed results
