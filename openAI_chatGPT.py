@@ -1,3 +1,6 @@
+# update with more units - as used for evaluation.
+# still x-axis shape is the same, 1000 entities. sth. to overcome in next days/weeks/months/years/never (who knows, not me i've never... ;)).
+
 import tensorflow as tf
 import numpy as np
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -29,7 +32,7 @@ with tf.device('/device:GPU:0'):
     # Create the model - it is a scrap, but working scrap - 18x better than connecting points 'row_wise'
     # kinda crude, and scrap - beware
     num_cities = 1000
-    def model(n): # looks like a daisy! can you agree? if not, please define 'daisy' in a most general term... this model has even stem (hihi)...
+    def model(n):
         inputs=tf.keras.layers.Input(shape=(num_cities, 3), batch_size=4)
         nd1,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         nd2,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
