@@ -1,5 +1,6 @@
 #update the architecture. working on 8gb rtx2080. kinda slow, as it still uses cpu mainly. much slower than previous version.
 #different training loop. created with help of openai's gpt3 (this free sth). as the whole project was intended
+#loss updated
 
 import tensorflow as tf
 import numpy as np
@@ -44,7 +45,7 @@ with tf.device('/device:GPU:0'):
         y_pred = tf.cast(y_pred, dtype=tf.float32)
 
         # Compute the mean squared error
-        loss = tf.square(y_true - y_pred)
+        loss = keras.losses.mean_squared_error(y_true, y_pred)#updated, working, not validated yet
 
         return loss
 
@@ -68,13 +69,13 @@ with tf.device('/device:GPU:0'):
         nd6,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         nd7,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
 
-        rd1,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd2,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd3,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd4,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd5,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd6,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd7,_=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd1,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd2,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd3,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd4,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd5,_,asdf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd6,_,asdf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd7,_,asdf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
 
         sum1=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
         sum2=tf.keras.layers.Add()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
@@ -90,7 +91,7 @@ with tf.device('/device:GPU:0'):
 
     # tsp_data = generate_tsp_data(num_cities)
     
-    model=model1(14,num_cities)
+    model=model1(2,num_cities)
     model.summary()
     # Compile the model
     optimizer = tf.keras.optimizers.AdamW(0.0005,0.007,0.8,0.98,1e-6)
@@ -128,4 +129,4 @@ with tf.device('/device:GPU:0'):
 
         print(f"\n\n\nEpoch {epoch + 1}/{num_epochs}\n\n\n")
 
-        model.save(f"./model_{epoch}_loss_{tf.reduce_mean(loss)}.h5", overwrite=False) # line updated. there should not be any tensor in filename!
+        model.save(f"./model_{epoch}_loss_{tf.reduce_sum(loss)}.h5", overwrite=False)
