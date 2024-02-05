@@ -80,14 +80,15 @@ with tf.device('/device:GPU:0'):
         sum1=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
         sum2=tf.keras.layers.Add()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
 
-        middle1,asdddd=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(sum1)
-        middle2,asdasdasd=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(sum2)
+        middle1=tf.keras.layers.Dense(num_cities,"elu")(sum1)
+        middle2=tf.keras.layers.Dense(num_cities,"relu")(sum2)
 
         middle=tf.keras.layers.Add()([middle1,middle2])
         # middle=tf.keras.layers.Flatten()(middle)
         outputs=tf.keras.layers.Dense(num_cities,"softmax")(middle)
 
         return tf.keras.Model(inputs,outputs)
+
 
     # tsp_data = generate_tsp_data(num_cities)
     
