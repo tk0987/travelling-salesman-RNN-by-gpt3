@@ -128,4 +128,4 @@ with tf.device('/device:GPU:0'):
 
         print(f"\n\n\nEpoch {epoch + 1}/{num_epochs}\n\n\n")
 
-        model.save(f"./model_{epoch}_loss_{loss}.h5", overwrite=False)
+        model.save(f"./model_{epoch}_loss_{tf.reduce_mean(loss)}.h5", overwrite=False) # line updated. there should not be any tensor in filename!
