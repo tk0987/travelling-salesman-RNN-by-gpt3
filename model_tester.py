@@ -9,36 +9,6 @@ def tsp_loss(y_true, y_pred):
     loss = tf.keras.losses.huber(y_true,y_pred[:])
     return tf.reduce_mean(loss)
     # return loss
-def model1(n,num_cities):
-    inputs = tf.keras.layers.Input(shape=(num_cities, 3), batch_size=1)
-    # inputs=tf.keras.layers.Input(shape=(num_cities, 3), batch_size=1)
-    nd1,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    nd2,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    nd3,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    nd4,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    nd5,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    nd6,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    nd7,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-
-    rd1,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    rd2,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    rd3,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    rd4,_=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    rd5,_,asdf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    rd6,_,asdf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-    rd7,_,asdf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-
-    sum1=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
-    sum2=tf.keras.layers.Add()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
-
-    middle1=tf.keras.layers.Dense(num_cities,"elu")(sum1)
-    middle2=tf.keras.layers.Dense(num_cities,"relu")(sum2)
-
-    middle=tf.keras.layers.Add()([middle1,middle2])
-    # middle=tf.keras.layers.Flatten()(middle)
-    outputs=tf.keras.layers.Dense(1,"softmax")(middle)
-    # print(tf.shape)
-    return tf.keras.Model(inputs, outputs)
 
 global num_cities
 num_cities = 512
