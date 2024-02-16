@@ -142,7 +142,7 @@ with tf.device('/device:CPU:0'):
         total_loss = 0.0
         num_batches = 0
         for batch_inputs, batch_targets in dataset:
-            loss = train_step(batch_inputs, tf.zeros_like(batch_inputs))
+            loss = train_step(tf.zeros_like(batch_inputs),batch_inputs)
             total_loss += loss
             num_batches += 1
 
