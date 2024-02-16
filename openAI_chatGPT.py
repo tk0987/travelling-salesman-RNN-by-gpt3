@@ -1,6 +1,6 @@
 # original training loop restored. loss function will need to be updated. architecture 2x better than connecting points row/col-wise after first epoch
 # upgrading cuda for tf 2.15 - after this model will be tested after more epochs
-mport tensorflow as tf
+import tensorflow as tf
 import numpy as np
 import os
 # import h5py
