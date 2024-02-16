@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import os
+from datetime import datetime
 # import h5py
 with tf.device('/device:CPU:0'):
 # gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -13,7 +14,7 @@ with tf.device('/device:CPU:0'):
 #     except RuntimeEr
     os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
     # Set the random seeds for reproducibility
-    seed = 777
+    seed = int(datetime.now().timestamp())
     np.random.seed(seed)
     tf.random.set_seed(seed)
     # def generate_tsp_data(num_cities):
@@ -99,7 +100,7 @@ with tf.device('/device:CPU:0'):
     model=model1(5,num_cities=num_cities)
     model.summary()
     # Compile the model
-    optimizer = tf.keras.optimizers.AdamW(0.0001, 0.3)
+    optimizer = tf.keras.optimizers.AdamW(0.01, 0.8)
     model.compile(optimizer=optimizer, loss=travelling_loss)
 
     # Generate training data
@@ -113,6 +114,7 @@ with tf.device('/device:CPU:0'):
     num_epochs = 1000
     for epoch in range(num_epochs):
         def generate_tsp_data(num_cities):
+            seed = int(datetime.now().timestamp())
             np.random.seed(seed)
             return np.random.rand(num_cities, 3)
         tsp_data = generate_tsp_data(num_cities)
@@ -152,3 +154,4 @@ with tf.device('/device:CPU:0'):
         average_loss = total_loss / num_batches
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.8f}")
         model.save(f"model_{epoch}_loss_{average_loss}")
+
