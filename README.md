@@ -16,3 +16,9 @@ epoch 51:
 
 
 my tf crashed after nvidia driver update (this one from january 2024). so, i have to use cpu so far.
+
+***
+REMEMBER - just logic. i want to say, that:
+***
+
+this network will never approach '0.0' loss. in training loop - every epoch - new dataset is drawn, with time seed. I hope that it will optimize its parameters, but i need to validate this first. hope is a mother of fool. we will see ;)
