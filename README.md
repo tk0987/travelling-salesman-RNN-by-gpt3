@@ -15,3 +15,4 @@ epoch 51:
 2.0881891 # this is how better NN performs than row/col-wise point connection
 
 architecture change soon (not very good)
+my tf crashed after nvidia driver update (this one from january 2024). so, i have to use cpu so far.
