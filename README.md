@@ -6,6 +6,7 @@ ATTENTION
 created mainly by gpt3 from openai. under validation. currently - after firs epoch 2x times faster than connecting 3d points row/col-wise.
 full validation soon.
 
+older version:
 epoch 51:
 
 1/1 [==============================] - 2s 2s/step
