@@ -5,7 +5,7 @@ ATTENTION
 ***
 created mainly by gpt3 from openai. under validation. currently - after firs epoch 2x times faster than connecting 3d points row/col-wise.
 full validation soon.
-
+***
 older version:
 epoch 51:
 
@@ -14,8 +14,15 @@ epoch 51:
 (512, 1)
 
 2.0881891 # this is how better NN performs than row/col-wise point connection. 16.02.2024 - previous, worse architecture. loss now updated, we will see what happen. bills are growing so.
+***
+***
+new version:
+1/1 [==============================] - 1s 1s/step
+(4096, 1)
+2.0490913
 
-
+pretty similiar
+***
 my tf crashed after nvidia driver update (this one from january 2024). so, i have to use cpu so far.
 
 ***
