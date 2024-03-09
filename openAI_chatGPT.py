@@ -22,7 +22,7 @@ with tf.device('/device:CPU:0'):
     #     return np.random.rand(num_cities, 3)
     global inputs
     global num_cities
-    num_cities = 512
+    num_cities = 4096
     global num_samples
     num_samples = 1000
    
@@ -47,15 +47,15 @@ with tf.device('/device:CPU:0'):
 
         # sum1=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
         sum2=tf.keras.layers.Add()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
-        sum2,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(sum2)
+        sum2=tf.keras.layers.Dense(n,"elu")(sum2)
 
-        rd1,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd2,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd1,asdf,sdfghsf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd2,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd3,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd4,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd5,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd6,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd7,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd7=tf.keras.layers.Dense(n,"elu")(inputs)
 
         sum3=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
 
@@ -113,6 +113,7 @@ with tf.device('/device:CPU:0'):
 # Training loop
     num_epochs = 1000
     for epoch in range(num_epochs):
+        # num_cities = np.random.randint(3,65535)
         def generate_tsp_data(num_cities):
             seed = int(datetime.now().timestamp())
             np.random.seed(seed)
@@ -154,4 +155,3 @@ with tf.device('/device:CPU:0'):
         average_loss = total_loss / num_batches
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.8f}")
         model.save(f"model_{epoch}_loss_{average_loss}")
-
