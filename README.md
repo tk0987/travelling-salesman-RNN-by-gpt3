@@ -18,7 +18,9 @@ epoch 51:
 ***
 new version:
 1/1 [==============================] - 1s 1s/step
+
 (4096, 1)
+
 2.0490913
 
 pretty similiar
