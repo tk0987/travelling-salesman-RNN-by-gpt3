@@ -32,3 +32,5 @@ REMEMBER - just logic. i want to say, that:
 ***
 
 this network will never approach '0.0' loss. in training loop - every epoch - new dataset is drawn, with time seed. I hope that it will optimize its parameters, but i need to validate this first. hope is a mother of fool. we will see ;)
+
+the goal: to make several (saved) models and find an algorithm to work on gcode using them (all models for different size of data - eg. 4096 cities, 2048 cities, so on).
