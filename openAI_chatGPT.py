@@ -22,7 +22,7 @@ with tf.device('/device:CPU:0'):
     #     return np.random.rand(num_cities, 3)
     global inputs
     global num_cities
-    num_cities = 4096
+    num_cities = 1024
     global num_samples
     num_samples = 1000
    
@@ -32,10 +32,10 @@ with tf.device('/device:CPU:0'):
         nd1,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         nd2,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         nd3,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd4,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd5,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd6,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd7,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        nd4,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        nd5,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        nd6,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        nd7,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
 
         # rd1=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         # rd2=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
@@ -46,26 +46,26 @@ with tf.device('/device:CPU:0'):
         # rd7=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
 
         # sum1=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
-        sum2=tf.keras.layers.Add()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
+        sum2=tf.keras.layers.Concatenate()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
         sum2=tf.keras.layers.Dense(n,"elu")(sum2)
 
         rd1,asdf,sdfghsf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd2,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd3,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd4,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd5,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd6,asdf=tf.keras.layers.SimpleRNN(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd4,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd5,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+        rd6,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
         rd7=tf.keras.layers.Dense(n,"elu")(inputs)
 
-        sum3=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
+        sum3=tf.keras.layers.Concatenate()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
 
-        middle1=tf.keras.layers.Dense(num_cities,"relu")(sum3)
-        middle2=tf.keras.layers.Dense(num_cities,"relu")(sum2)
+        middle1=tf.keras.layers.Dense(num_cities,"elu")(sum3)
+        middle2=tf.keras.layers.Dense(num_cities,"elu")(sum2)
 
         middle=tf.keras.layers.Add()([middle1,middle2])
-        middle=tf.keras.layers.Dense(num_cities,"relu")(middle)
+        middle=tf.keras.layers.Dense(num_cities,"elu")(middle)
         # middle=tf.keras.layers.Flatten()(middle)
-        outputs=tf.keras.layers.Dense(1,"sigmoid")(middle)
+        outputs=tf.keras.layers.Dense(1,"softmax")(middle)
         # print(tf.shape)
         return tf.keras.Model(inputs, outputs)
 
@@ -108,27 +108,27 @@ with tf.device('/device:CPU:0'):
     
 
     # Define the training step
-
+    def generate_tsp_data(num_cities):
+        seed = int(datetime.now().timestamp())
+        np.random.seed(seed)
+        return np.random.rand(num_cities, 3)
+    tsp_data = generate_tsp_data(num_cities)
+    inputs = np.asanyarray([generate_tsp_data(num_cities=num_cities) for i in range(num_samples)])
 
 # Training loop
     num_epochs = 1000
     for epoch in range(num_epochs):
         # num_cities = np.random.randint(3,65535)
-        def generate_tsp_data(num_cities):
-            seed = int(datetime.now().timestamp())
-            np.random.seed(seed)
-            return np.random.rand(num_cities, 3)
-        tsp_data = generate_tsp_data(num_cities)
-        inputs = np.asanyarray([generate_tsp_data(num_cities=num_cities) for i in range(num_samples)])
-        outputs_indices = np.zeros((num_samples, num_cities))
-        outputs_values = np.zeros((num_samples, num_cities))
+
+        outputs_indices = np.zeros((num_samples, num_cities), dtype=np.int32)
+        outputs_values = np.zeros((1,num_samples, num_cities))
         batch_size = 1
 
         for i in range(num_samples):
             permutation = np.random.permutation(num_cities)
             # inputs[i] = tsp_data[permutation]
             outputs_indices[i] = np.arange(num_cities)
-            outputs_values[i] = permutation
+            outputs_values[0,i] = permutation
 
         outputs_indices = outputs_indices.astype(np.int32)  # Convert to int64 data type
         outputs_values = outputs_values.astype(np.float32)  # Convert to int64 data type
