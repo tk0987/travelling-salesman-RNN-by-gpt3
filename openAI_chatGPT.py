@@ -68,23 +68,23 @@ with tf.device('/device:CPU:0'):
         outputs=tf.keras.layers.Dense(1,"softmax")(middle)
         # print(tf.shape)
         return tf.keras.Model(inputs, outputs)
-
-
-
     @tf.function
-    def tsp_loss(y_true, y_pred):
-        # y_true = tf.cast(tf.sparse.to_dense(y_true), dtype=tf.float32)
-        loss = tf.keras.losses.mean_squared_error(y_true,y_pred[:])
-        return tf.reduce_mean(loss)
-    @tf.function
-    def travelling_loss(y_true,y_pred):
-        indices=tf.argsort(y_pred)
-        return tf.reduce_mean(tf.keras.losses.mean_squared_error(y_true,inputs[indices]))
+    def travelling_loss(y_true, y_pred):
+        loss = tf.keras.losses.mean_squared_error(y_true, y_pred)
+        return loss
+
+
+
+
+
+
+
+
     @tf.function
     def train_step(inputs, targets):
         with tf.GradientTape() as tape:
             predictions = model(inputs)
-            loss = tsp_loss(targets, predictions)
+            loss = travelling_loss(targets, predictions)
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         return loss
@@ -114,7 +114,7 @@ with tf.device('/device:CPU:0'):
         return np.random.rand(num_cities, 3)
     tsp_data = generate_tsp_data(num_cities)
     inputs = np.asanyarray([generate_tsp_data(num_cities=num_cities) for i in range(num_samples)])
-
+    
 # Training loop
     num_epochs = 1000
     for epoch in range(num_epochs):
@@ -148,10 +148,13 @@ with tf.device('/device:CPU:0'):
         total_loss = 0.0
         num_batches = 0
         for batch_inputs, batch_targets in dataset:
-            loss = train_step(tf.zeros_like(batch_inputs),batch_inputs)
-            total_loss += loss
+            loss = train_step(batch_inputs,tf.zeros_like(batch_inputs))
+            total_loss += tf.reduce_mean(loss)
             num_batches += 1
 
+        average_loss = total_loss / num_batches
+        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.8f}")
+        model.save(f"model_{epoch}_loss_{average_loss}")
         average_loss = total_loss / num_batches
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.8f}")
         model.save(f"model_{epoch}_loss_{average_loss}")
