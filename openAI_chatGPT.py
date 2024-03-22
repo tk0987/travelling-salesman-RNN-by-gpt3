@@ -1,160 +1,111 @@
+# true: loop was written by the chatgpt 3.5...
+# false: it works good
+
 import tensorflow as tf
 import numpy as np
-import os
-from datetime import datetime
-# import h5py
-with tf.device('/device:CPU:0'):
-# gpus = tf.config.experimental.list_physical_devices('GPU')
-# if gpus:
-#     try:
-#         tf.config.experimental.set_virtual_device_configuration(gpus[0],
-#             [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=7680)])
-#         logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-#         print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-#     except RuntimeEr
-    os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
-    # Set the random seeds for reproducibility
-    seed = int(datetime.now().timestamp())
-    np.random.seed(seed)
-    tf.random.set_seed(seed)
-    # def generate_tsp_data(num_cities):
-    #     np.random.seed(seed)
-    #     return np.random.rand(num_cities, 3)
-    global inputs
-    global num_cities
-    num_cities = 1024
-    global num_samples
-    num_samples = 1000
-   
-    def model1(n,num_cities):
-        inputs = tf.keras.layers.Input(shape=(num_cities, 3), batch_size=1)
-        # inputs=tf.keras.layers.Input(shape=(num_cities, 3), batch_size=1)
-        nd1,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd2,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd3,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd4,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd5,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd6,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        nd7,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
 
-        # rd1=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        # rd2=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        # rd3=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        # rd4=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        # rd5=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        # rd6=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        # rd7=tf.keras.layers.Dense(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
+# Set the random seeds for reproducibility
+seed = 777
+np.random.seed(seed)
+tf.random.set_seed(seed)
 
-        # sum1=tf.keras.layers.Add()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
-        sum2=tf.keras.layers.Concatenate()([nd1,nd2,nd3,nd4,nd5,nd6,nd7])
-        sum2=tf.keras.layers.Dense(n,"elu")(sum2)
+# Generate random 3D TSP data
+def generate_tsp_data(num_cities):
+    np.random.seed(0)
+    return np.random.rand(num_cities, 3)
 
-        rd1,asdf,sdfghsf=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd2,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd3,asdf=tf.keras.layers.GRU(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd4,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd5,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd6,asdf,sdfgsdfg=tf.keras.layers.LSTM(n,return_sequences=True,return_state=True,go_backwards=True)(inputs)
-        rd7=tf.keras.layers.Dense(n,"elu")(inputs)
+@tf.function
+def tsp_loss(y_true, y_pred):
+    y_true = tf.cast(tf.sparse.to_dense(y_true), dtype=tf.float32)
+    loss = tf.keras.losses.mean_squared_error(y_true, y_pred)
+    return tf.reduce_mean(loss)
 
-        sum3=tf.keras.layers.Concatenate()([rd1,rd2,rd3,rd4,rd5,rd6,rd7])
+# Create the model
+num_cities = 1000
+tsp_data = generate_tsp_data(num_cities)
+inputs = tf.keras.layers.Input(shape=(num_cities, 3), batch_size=4)
+# lstm1 = tf.keras.layers.GRU(800, return_sequences=True, return_state=True, go_backwards=True)
+# lstm2 = tf.keras.layers.SimpleRNN(800, return_sequences=True, return_state=True, go_backwards=True)
+# lstm3 = tf.keras.layers.GRU(800, return_sequences=True, return_state=True, go_backwards=True)
+# lstm4 = tf.keras.layers.GRU(800, return_sequences=True, return_state=True, go_backwards=True)
+# lstm5 = tf.keras.layers.GRU(800, return_sequences=True, return_state=True, go_backwards=True)
+# lstm6 = tf.keras.layers.GRU(800, return_sequences=True, return_state=True, go_backwards=True)
+lstm1 = tf.keras.layers.Dense(500, activation='elu')
+lstm2 = tf.keras.layers.Dense(500, activation='relu')
+lstm3 = tf.keras.layers.Dense(500, activation='elu')
+lstm4 = tf.keras.layers.Dense(500, activation='relu')
+lstm5 = tf.keras.layers.Dense(500, activation='elu')
+lstm6 = tf.keras.layers.Dense(500, activation='relu')
+last_hidden_state1 = lstm1(inputs)
+last_hidden_state2 = lstm2(inputs)
+last_hidden_state3= lstm3(inputs)
+last_hidden_state4 = lstm4(inputs)
+last_hidden_state5 = lstm5(inputs)
+last_hidden_state6 = lstm6(inputs)
+aaaaa=tf.keras.layers.Concatenate()([last_hidden_state1, last_hidden_state2, last_hidden_state3, last_hidden_state4, last_hidden_state5, last_hidden_state6 ])
+middle=tf.keras.layers.Dense(num_cities, activation='relu')(aaaaa)
+middle1=tf.keras.layers.Dense(num_cities, activation='elu')(aaaaa)
+aaaaa=tf.keras.layers.Concatenate()([middle,middle1])
+_,aaaaa= tf.keras.layers.GRU(num_cities, return_sequences=True, return_state=True, go_backwards=True)(aaaaa)
+outputs = tf.keras.layers.Dense(num_cities, activation='sigmoid')(aaaaa)
+model = tf.keras.Model(inputs, outputs)
 
-        middle1=tf.keras.layers.Dense(num_cities,"elu")(sum3)
-        middle2=tf.keras.layers.Dense(num_cities,"elu")(sum2)
+# Compile the model
+optimizer = tf.keras.optimizers.Adam()
+model.summary()
+model.compile(optimizer=optimizer, loss=tsp_loss)
 
-        middle=tf.keras.layers.Add()([middle1,middle2])
-        middle=tf.keras.layers.Dense(num_cities,"elu")(middle)
-        # middle=tf.keras.layers.Flatten()(middle)
-        outputs=tf.keras.layers.Dense(1,"softmax")(middle)
-        # print(tf.shape)
-        return tf.keras.Model(inputs, outputs)
-    @tf.function
-    def travelling_loss(y_true, y_pred):
-        loss = tf.keras.losses.mean_squared_error(y_true, y_pred)
-        return loss
+# Generate training data
+num_samples = 1000
+inputs = np.zeros((num_samples, num_cities, 3))
+outputs_indices = np.zeros((num_samples, num_cities))
+outputs_values = np.zeros((num_samples, num_cities))
+batch_size = 4
 
+for i in range(num_samples):
+    permutation = np.random.permutation(num_cities)
+    inputs[i] = tsp_data[permutation]
+    outputs_indices[i] = np.arange(num_cities)
+    outputs_values[i] = permutation
 
+outputs_indices = outputs_indices.astype(np.int64)  # Convert to int64 data type
+outputs_values = outputs_values.astype(np.int64)  # Convert to int64 data type
 
+# Convert to sparse representation
+indices = np.stack([np.repeat(np.arange(num_samples), num_cities), outputs_indices.flatten()]).T
+values = outputs_values.flatten()
+dense_shape = (num_samples, num_cities)
+outputs_sparse = tf.sparse.SparseTensor(indices, values, dense_shape)
 
+# Create a TensorFlow dataset
+dataset = tf.data.Dataset.from_tensor_slices((inputs, outputs_sparse))
 
+# Configure the dataset for optimal performance
+dataset = dataset.shuffle(num_samples).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
 
+# Define the training step
+@tf.function
+def train_step(inputs, targets):
+    with tf.GradientTape() as tape:
+        predictions = model(inputs)
+        loss = tsp_loss(targets, predictions)
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    return loss
 
-
-    @tf.function
-    def train_step(inputs, targets):
-        with tf.GradientTape() as tape:
-            predictions = model(inputs)
-            loss = travelling_loss(targets, predictions)
-        gradients = tape.gradient(loss, model.trainable_variables)
-        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        return loss
-
-
-    # Generate random 3D TSP data
-
-    # global num_cities
-
-    # Create the model
-
-    
-    model=model1(5,num_cities=num_cities)
-    model.summary()
-    # Compile the model
-    optimizer = tf.keras.optimizers.AdamW(0.01, 0.8)
-    model.compile(optimizer=optimizer, loss=travelling_loss)
-
-    # Generate training data
-    
-    
-
-    # Define the training step
-    def generate_tsp_data(num_cities):
-        seed = int(datetime.now().timestamp())
-        np.random.seed(seed)
-        return np.random.rand(num_cities, 3)
-    tsp_data = generate_tsp_data(num_cities)
-    inputs = np.asanyarray([generate_tsp_data(num_cities=num_cities) for i in range(num_samples)])
-    
 # Training loop
-    num_epochs = 1000
-    for epoch in range(num_epochs):
-        # num_cities = np.random.randint(3,65535)
+num_epochs = 100
+for epoch in range(num_epochs):
+    total_loss = 0.0
+    num_batches = 0
+    for batch_inputs, batch_targets in dataset:
+        loss = train_step(batch_inputs, batch_targets)
+        total_loss += loss
+        num_batches += 1
 
-        outputs_indices = np.zeros((num_samples, num_cities), dtype=np.int32)
-        outputs_values = np.zeros((1,num_samples, num_cities))
-        batch_size = 1
+    average_loss = total_loss / num_batches
+    print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.6f}")
+    model.save_weights(f"model_{epoch}_loss_{average_loss:.6f}.weights.h5")
 
-        for i in range(num_samples):
-            permutation = np.random.permutation(num_cities)
-            # inputs[i] = tsp_data[permutation]
-            outputs_indices[i] = np.arange(num_cities)
-            outputs_values[0,i] = permutation
-
-        outputs_indices = outputs_indices.astype(np.int32)  # Convert to int64 data type
-        outputs_values = outputs_values.astype(np.float32)  # Convert to int64 data type
-
-        # Convert to sparse representation
-        indices = np.stack([np.repeat(np.arange(num_samples), num_cities), outputs_indices.flatten()]).T
-        values = outputs_values.flatten()
-        dense_shape = (num_samples, num_cities)
-        outputs_sparse = tf.sparse.SparseTensor(indices, values, dense_shape)
-
-        # Create a TensorFlow dataset
-        dataset = tf.data.Dataset.from_tensor_slices((inputs, outputs_sparse))
-
-        # Configure the dataset for optimal performance
-        dataset = dataset.shuffle(num_samples).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
-    # print(tf.shape(dataset))
-        total_loss = 0.0
-        num_batches = 0
-        for batch_inputs, batch_targets in dataset:
-            loss = train_step(batch_inputs,tf.zeros_like(batch_inputs))
-            total_loss += tf.reduce_mean(loss)
-            num_batches += 1
-
-        average_loss = total_loss / num_batches
-        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.8f}")
-        model.save(f"model_{epoch}_loss_{average_loss}")
-        average_loss = total_loss / num_batches
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.8f}")
         model.save(f"model_{epoch}_loss_{average_loss}")
