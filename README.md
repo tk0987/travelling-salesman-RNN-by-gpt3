@@ -4,4 +4,6 @@
 ATTENTION
 ***
 
-update will be validated soon - there were errors in both training loop and model tester
+not yet mastered. all about the loss function - this one in code is crap.
+
+this NN performs similiar to connecting points element-wise: 0.9999999979143271 [predicted_route/point-wise_route].
